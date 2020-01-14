@@ -1,7 +1,7 @@
 #coding:gbk
 '''
 Created on 
-
+  
 @author: hankou
 '''
 from collections import Counter
@@ -2078,9 +2078,7 @@ def tj_aa(file_in,file_out):
     for key in mm:
         fout.write(str(key) + "\t" + str(mm[key]) + "\n")
         
-''' 
-瀛楃涓叉埅鍙栫▼搴�
-'''
+
 def cut_100(file_in,file_out):
     fout = open(file_out,'w')
     ii=1
@@ -3234,11 +3232,6 @@ def tj_kk(file_in,file_out):
     for key in mm:
         fout.write(mm+"\t" + str(mm[key]))
 
-'''
-python tiqu_os.py k5.type 270w.tiqu  k5.sort.bam  寰楀埌杩欎簺snp鐨剅eads锛屽湪270w.pbs鑴氭湰褰撲腑
-python tj_pp.py temp/all_no.id k5.map k5.hege   2448291涓�
-awk -F '~' '{print($1"\t"$2"\t"$3);}' k5.hege > k5_shai.type
-'''
 def tj_pp(file_in,file_in1,file_out):
     fout = open(file_out,'w')
     mm = {}
@@ -3925,6 +3918,7 @@ def get_11(file_in,file_in1,file_out):
     for key in mm:
         if(not mm1.has_key(key)):
             fout.write(str(key) + "\t" + mm[key] + "\n")
+
             
 def find_aaaa(file_in,file_in1,file_out):
     fout = open(file_out,'w')
@@ -4978,7 +4972,6 @@ def find_x234_reads_chai(file_in,file_out,file_out2,file_out3,file_out4,is_z):
                     fout4.write(id_kk + "_e\n" + reads + "\n")
                 i_tt += 1
     return 0
-
 def hu_bu(file_in,file_out):
     fout = open(file_out,'w')
     for line in open(file_in):
@@ -5165,15 +5158,15 @@ def snp_1(file_in,file_in1,file_out):
             reads = vec[ii]
             site = mm[reads]
             if(site == "N"):
-                is_find = 0 #鏈変竴涓猺eads鍦ㄥ熀鍥犵粍涓婃病鍖归厤鍒�
+                is_find = 0 
             mmk.setdefault(site,1)
         if(len(mmk) > 1):
-            is_find = 2 #涓嶅悓reads锛屽尮閰嶅埌浜嗗涓綅缃�
+            is_find = 2 
         for kk in mmk:
             ss += mmk[kk] + ":"
         ss = ss[0:-1]
         if(ss != key):
-            is_find = 3 #鍖归厤鐨勪綅缃拰鍘熷厛5鍊嶇殑鍘熷浣嶇疆涓嶇浉鍚岋紝杩欐槸灏嗚鐩栨帀is_find=2鐨勫��
+            is_find = 3 
         fout.write(key + "\t" +mm1[key] + "\t" + ss + "\t" +str(is_find) + "\n")
     return 0 
 
@@ -5446,7 +5439,6 @@ def yz_234_reads(file_in,file_out,xx):
         reads = mmk[key]
         fout.write(key + "\t" + mm[key] + "\t" + str(is_err) +"\t"+str(xx)+"\t" + reads +"\n")
     return 0
-
 def tiqu_234_reads(file_in,file_in1,file_out,file_out1):
     fout = open(file_out,'w')
     fout1 = open(file_out1,'w')
@@ -5533,14 +5525,14 @@ def is_only(file_in,file_out,file_out1):
                 mm1[fen] += 1
             else:
                 mm1.setdefault(fen,1)
-        max_key = max(mm1) #鎵惧埌鏈�灏忓緱鍒�
+        max_key = max(mm1) 
         max_value = mm1[max_key]
-        if(max_value == 1): #鏄惁鏈�灏忓緱鍒嗗�兼槸鍞竴鐨�
-            for ii in range(0,len(vec)): #鎻愬彇鏈�灏忓緱鍒嗚褰�
+        if(max_value == 1): #
+            for ii in range(0,len(vec)):
                 vec1 = vec[ii].split("@")
                 fen = int(vec1[1])
                 if(fen == max_key):
-                    if(vec1[2] =="0"): #鍒ゆ柇鏈�灏忓緱鍒嗘槸鍚︿笉鏄痠ndel
+                    if(vec1[2] =="0"): 
                         fout.write(key+"\t"+ vec1[0] + "\t" + vec1[1] + "\t"  +vec1[2]+"\n")
                     else:
                         fout1.write(key+"\t"+mm[key]+"\tsmall_indel\n")
@@ -5814,6 +5806,8 @@ def del_one(file_in,file_in1,file_out,file_out1):
         else:
             fout.write(line.strip()+"\n")
     return 0
+
+
 
 def del_out_id(file_in,file_in1,file_out):
     fout = open(file_out,'w')
@@ -6203,7 +6197,6 @@ if __name__ == '__main__':
     #get_snp_reads('D://down1//log_aa','D://down1//log_bb')
     #reduance_snp('D://down1//tt_k','D://down1//tt_w')
     #det_tj('D://down1//4.w','D://down1//4.d')
-    #create_ab('/Users/yangcheng/Documents/瓒呯畻鏁版嵁/r1','/Users/yangcheng/Documents/瓒呯畻鏁版嵁/r1_a','/Users/yangcheng/Documents/瓒呯畻鏁版嵁/r1_b')
     #summary_dp_new('D://down1//op1','D://down1//op2','D://down1//op3')
     #fx_tj('D://down1//i1','D://down1//i1.tj')
     #kf_33('D://down1//3_2_dp28','D://down1//3_2_dp28.kf')

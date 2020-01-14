@@ -1,7 +1,6 @@
 #coding:gbk
-#coding:utf-8
 '''
-Created on 2019å¹´4æœˆ26æ—¥
+Created on 2019Äê
 
 @author: gene
 '''
