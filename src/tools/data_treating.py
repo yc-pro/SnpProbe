@@ -47,4 +47,4 @@ def x5_id(file_in,file_in1,file_out):
         
                     
 if __name__ == '__main__':
-    pass
+    print("Hello word!!!git")
