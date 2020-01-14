@@ -1,8 +1,8 @@
 #coding:gbk
 ''' 
 Created on 2020年1月14日
-测试
-@author: Genome
+苹果数据测试
+@author: YC
 '''
 
 from collections import Counter
