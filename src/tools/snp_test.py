@@ -1,4 +1,4 @@
-#coding:utf-8
+#coding:gbk
 '''
 Created on 2019��3��9��
 
