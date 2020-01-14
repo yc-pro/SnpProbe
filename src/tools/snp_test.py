@@ -1,6 +1,6 @@
-#coding:gbk
+#coding:UTF-8
 '''
-Created on 2019��3��9��
+Created on 
 
 @author: hankou
 '''
@@ -2079,7 +2079,7 @@ def tj_aa(file_in,file_out):
         fout.write(str(key) + "\t" + str(mm[key]) + "\n")
         
 ''' 
-字符串截取程序
+瀛楃涓叉埅鍙栫▼搴�
 '''
 def cut_100(file_in,file_out):
     fout = open(file_out,'w')
@@ -3235,8 +3235,8 @@ def tj_kk(file_in,file_out):
         fout.write(mm+"\t" + str(mm[key]))
 
 '''
-python tiqu_os.py k5.type 270w.tiqu  k5.sort.bam  得到这些snp的reads，在270w.pbs脚本当中
-python tj_pp.py temp/all_no.id k5.map k5.hege   2448291个
+python tiqu_os.py k5.type 270w.tiqu  k5.sort.bam  寰楀埌杩欎簺snp鐨剅eads锛屽湪270w.pbs鑴氭湰褰撲腑
+python tj_pp.py temp/all_no.id k5.map k5.hege   2448291涓�
 awk -F '~' '{print($1"\t"$2"\t"$3);}' k5.hege > k5_shai.type
 '''
 def tj_pp(file_in,file_in1,file_out):
@@ -5165,15 +5165,15 @@ def snp_1(file_in,file_in1,file_out):
             reads = vec[ii]
             site = mm[reads]
             if(site == "N"):
-                is_find = 0 #有一个reads在基因组上没匹配到
+                is_find = 0 #鏈変竴涓猺eads鍦ㄥ熀鍥犵粍涓婃病鍖归厤鍒�
             mmk.setdefault(site,1)
         if(len(mmk) > 1):
-            is_find = 2 #不同reads，匹配到了多个位置
+            is_find = 2 #涓嶅悓reads锛屽尮閰嶅埌浜嗗涓綅缃�
         for kk in mmk:
             ss += mmk[kk] + ":"
         ss = ss[0:-1]
         if(ss != key):
-            is_find = 3 #匹配的位置和原先5倍的原始位置不相同，这是将覆盖掉is_find=2的值
+            is_find = 3 #鍖归厤鐨勪綅缃拰鍘熷厛5鍊嶇殑鍘熷浣嶇疆涓嶇浉鍚岋紝杩欐槸灏嗚鐩栨帀is_find=2鐨勫��
         fout.write(key + "\t" +mm1[key] + "\t" + ss + "\t" +str(is_find) + "\n")
     return 0 
 
@@ -5533,14 +5533,14 @@ def is_only(file_in,file_out,file_out1):
                 mm1[fen] += 1
             else:
                 mm1.setdefault(fen,1)
-        max_key = max(mm1) #找到最小得分
+        max_key = max(mm1) #鎵惧埌鏈�灏忓緱鍒�
         max_value = mm1[max_key]
-        if(max_value == 1): #是否最小得分值是唯一的
-            for ii in range(0,len(vec)): #提取最小得分记录
+        if(max_value == 1): #鏄惁鏈�灏忓緱鍒嗗�兼槸鍞竴鐨�
+            for ii in range(0,len(vec)): #鎻愬彇鏈�灏忓緱鍒嗚褰�
                 vec1 = vec[ii].split("@")
                 fen = int(vec1[1])
                 if(fen == max_key):
-                    if(vec1[2] =="0"): #判断最小得分是否不是indel
+                    if(vec1[2] =="0"): #鍒ゆ柇鏈�灏忓緱鍒嗘槸鍚︿笉鏄痠ndel
                         fout.write(key+"\t"+ vec1[0] + "\t" + vec1[1] + "\t"  +vec1[2]+"\n")
                     else:
                         fout1.write(key+"\t"+mm[key]+"\tsmall_indel\n")
@@ -6203,7 +6203,7 @@ if __name__ == '__main__':
     #get_snp_reads('D://down1//log_aa','D://down1//log_bb')
     #reduance_snp('D://down1//tt_k','D://down1//tt_w')
     #det_tj('D://down1//4.w','D://down1//4.d')
-    #create_ab('/Users/yangcheng/Documents/超算数据/r1','/Users/yangcheng/Documents/超算数据/r1_a','/Users/yangcheng/Documents/超算数据/r1_b')
+    #create_ab('/Users/yangcheng/Documents/瓒呯畻鏁版嵁/r1','/Users/yangcheng/Documents/瓒呯畻鏁版嵁/r1_a','/Users/yangcheng/Documents/瓒呯畻鏁版嵁/r1_b')
     #summary_dp_new('D://down1//op1','D://down1//op2','D://down1//op3')
     #fx_tj('D://down1//i1','D://down1//i1.tj')
     #kf_33('D://down1//3_2_dp28','D://down1//3_2_dp28.kf')
@@ -6271,13 +6271,13 @@ if __name__ == '__main__':
     #ddd1('D://down1//c.ty','D://down1//c_log','D://down1//cc.txt')
     #cut_100('D://down1//w1','D://down1//w1.tj')
     #cat_fa('D://down1//tt','D://down1//tt.tj','D://down1//tt1.tj')
-    #is_onesite_new('/Users/yangcheng/Documents/超算数据/t2','/Users/yangcheng/Documents/超算数据/t1','/Users/yangcheng/Documents/超算数据/t3')
-    #find_snp('/Users/yangcheng/Documents/超算数据/t1','/Users/yangcheng/Documents/超算数据/t2','/Users/yangcheng/Documents/超算数据/t3')
-    #get_num('/Users/yangcheng/Documents/超算数据/181.tiqu','/Users/yangcheng/Documents/超算数据/181.tj')
-    #print_awk('/Users/yangcheng/Documents/超算数据/k1','/Users/yangcheng/Documents/超算数据/k2')
+    #is_onesite_new('/Users/yangcheng/Documents/瓒呯畻鏁版嵁/t2','/Users/yangcheng/Documents/瓒呯畻鏁版嵁/t1','/Users/yangcheng/Documents/瓒呯畻鏁版嵁/t3')
+    #find_snp('/Users/yangcheng/Documents/瓒呯畻鏁版嵁/t1','/Users/yangcheng/Documents/瓒呯畻鏁版嵁/t2','/Users/yangcheng/Documents/瓒呯畻鏁版嵁/t3')
+    #get_num('/Users/yangcheng/Documents/瓒呯畻鏁版嵁/181.tiqu','/Users/yangcheng/Documents/瓒呯畻鏁版嵁/181.tj')
+    #print_awk('/Users/yangcheng/Documents/瓒呯畻鏁版嵁/k1','/Users/yangcheng/Documents/瓒呯畻鏁版嵁/k2')
     #chai_3_181('D://down1//361.fa','D://down1//361_3.fa')
     #snp_aa('D://down1//k1','D://down1//k1.fa')
-    #is_one_site('/Users/yangcheng/Documents/超算数据/kk','/Users/yangcheng/Documents/超算数据/kk1')
+    #is_one_site('/Users/yangcheng/Documents/瓒呯畻鏁版嵁/kk','/Users/yangcheng/Documents/瓒呯畻鏁版嵁/kk1')
     #match_2('D://down1//t1.18','D://down1//t2.18','D://down1//t3.18','D://down1//t4.18')
     #find_x5_x10('D://down1//tt','D://down1//tt1','D://down1//tt2')
     #x15_snp('D://down1//kt','D://down1//wt','D://down1//it')
