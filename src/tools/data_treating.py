@@ -1,3 +1,4 @@
+#coding:gbk
 '''
 Created on 2020Äê1ÔÂ14ÈÕ
 

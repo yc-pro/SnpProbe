@@ -1,3 +1,9 @@
 eclipse.preferences.version=1
-encoding//src/tools/snp_test.py=UTF-8
+encoding//src/tools/biopython.py=gbk
+encoding//src/tools/create_map.py=gbk
+encoding//src/tools/cut_mer.py=gbk
+encoding//src/tools/data_treating.py=gbk
+encoding//src/tools/e_card.py=gbk
+encoding//src/tools/gz_test.py=gbk
+encoding//src/tools/snp_test.py=gbk
 encoding/<project>=GBK

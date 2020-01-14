@@ -1,3 +1,4 @@
+#coding:gbk
 #coding:utf-8
 '''
 Created on 2019年4月26日
