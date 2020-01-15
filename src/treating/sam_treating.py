@@ -1,11 +1,16 @@
+#coding:gbk
 '''
 Created on 2020年1月15日
 
 @author: Genome
 '''
-def is_only(file_in,file_out,file_out1):
+
+'''
+进行寻找reads，比对到ref情况的统计，比对到唯一位置的，最后一列是1，比对到多个位置的是2
+倒数第2列0代表没发生indel
+'''
+def is_only(file_in,file_out):
     fout = open(file_out,'w')
-    fout1 = open(file_out1,'w')
     mm = {}
     for line in open(file_in):
         if(line[0] == "@"):
@@ -47,14 +52,18 @@ def is_only(file_in,file_out,file_out1):
                 fen = int(vec1[1])
                 if(fen == max_key): #找到最小得分的信息
                     if(vec1[2] =="0"):  #判断时候是不包含indel的，vec1[0]位点，vec1[1]得分，vec1[2]indel情况
-                        fout.write(key+"\t"+ vec1[0] + "\t" + vec1[1] + "\t"  +vec1[2]+"\n")
+                        fout.write(key+"\t"+ vec1[0] + "\t" + vec1[1] + "\t"  +vec1[2]+"\t1\t\n")
                     else:
-                        fout1.write(key+"\t"+mm[key]+"\tsmall_indel\n") #包含indel
+                        fout.write(key+"\t"+ vec1[0] + "\t" + vec1[1] + "\t"  +vec1[2]+"\t1\t\n") #包含indel
                 
         else:
             #包含多个最小得分
-            fout1.write(key+"\t"+mm[key]+"\tmany_small_value\n")
+            for ii in range(0,len(vec)):
+                vec1 = vec[ii].split("@")
+                fen = int(vec1[1])
+                if(fen == max_key):
+                    fout.write(key+"\t"+ vec1[0] + "\t" + vec1[1] + "\t"  +vec1[2]+"\t2\t\n")
     return 0
 
 if __name__ == '__main__':
-    pass
+    print("hello word")

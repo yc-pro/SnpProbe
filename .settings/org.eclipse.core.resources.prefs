@@ -6,4 +6,5 @@ encoding//src/tools/data_treating.py=gbk
 encoding//src/tools/e_card.py=gbk
 encoding//src/tools/gz_test.py=gbk
 encoding//src/tools/snp_test.py=gbk
+encoding//src/treating/sam_treating.py=gbk
 encoding/<project>=GBK
