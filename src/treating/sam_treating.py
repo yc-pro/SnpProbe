@@ -65,5 +65,30 @@ def is_only(file_in,file_out):
                     fout.write(key+"\t"+ vec1[0] + "\t" + vec1[1] + "\t"  +vec1[2]+"\t2\t\n")
     return 0
 
+def is_only_ordely(file_in,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    for line in open(file_in):
+        if(line[0] == "@"):
+            continue
+        vec = line.strip().split("\t")
+        id = vec[0]
+        site = vec[2] + ":" + vec[3]    #定位到referance上的比对位置
+        fen = ""
+        indel = ""
+        
+        for ii in range(4,len(vec)):
+            ui = vec[ii]
+            veckk = ui.split(":")
+            if(ui.find("AS:i:") >= 0):  #找到分数的情况
+                fen = veckk[2]  
+            elif(ui.find("XO:i:") >= 0):    #找到indel的情况
+                indel = veckk[2] 
+        sk = site+"@"+fen+"@"+ indel
+        if(mm.has_key(id)): #id为reads的编号
+            mm[id] += sk +"#"
+        else:
+            mm.setdefault(id,sk+"#")
+            
 if __name__ == '__main__':
     print("hello word")
