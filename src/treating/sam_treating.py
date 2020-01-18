@@ -88,7 +88,7 @@ def is_minfen(mm):
                 vec1 = vec[ii].split("@")
                 fen = int(vec1[1])
                 if(fen == max_key): #找到最小得分的信息
-                    if(vec1[2] =="0"):  #判断时候是不包含indel的，vec1[0]位点，vec1[1]得分，vec1[2]indel情况
+                    if(vec1[2] =="0"):  #判断时候是不包含indel的，vec1[0]位点，vec1[1]得分，vec1[2]indel情况,最后一列的1,就是U
                         str_re = key+"\t"+ vec1[0] + "\t" + vec1[1] + "\t"  +vec1[2]+"\t1"
                     else:
                         str_re = key+"\t"+ vec1[0] + "\t" + vec1[1] + "\t"  +vec1[2]+"\t1" #包含indel
@@ -101,11 +101,14 @@ def is_minfen(mm):
                 vec1 = vec[ii].split("@")
                 fen = int(vec1[1])
                 if(fen == max_key):
-                    str_re = key+"\t"+ vec1[0] + "\t" + vec1[1] + "\t"  +vec1[2]+"\t2"
+                    str_re = key+"\t"+ vec1[0] + "\t" + vec1[1] + "\t"  +vec1[2]+"\t2"  #最后一列的2就是m
                     mm_re.setdefault(itcc,str_re)
                     itcc += 1
     return mm_re
 
+'''
+统计每条reads的比对情况，得出最小得分的个数，得分值，indel情况
+'''
 def is_only_ordely(file_in,file_out,file_out1):
     fout = open(file_out,'w')
     fout1 = open(file_out1,'w')
@@ -158,5 +161,31 @@ def is_only_ordely(file_in,file_out,file_out1):
         fout1.write(str(key) + "\t" + str(mm_true[key]) + "\n")
     return 0
 
+'''
+寻找配对信息
+'''
+def find_pair(file_in,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        id = vec[0] #reads的id
+        site = vec[1]   #比对到ref的位点情况
+        many_site = vec[4]  #是否是多个比对位点，1为唯一一个
+        indel = vec[3]  #是否发生indel，0是没发生indel
+        messa = many_site + "\t" + indel+"\t" + id
+        if(mm.has_key(site)) :
+            mm[site] += messa + "@"
+        else:
+            mm.setdefault(site,messa+"@")
+    print("total site->" + len(mm))
+    for key in mm:
+        vec = mm[key][0:-1].split("@")
+        ss = str(len(vec)) + "\t"
+        for ii in range(0,len(vec)):
+            ss += vec[ii] + "\t"
+        fout.write(key + "\t" + ss + "\n")
+    return 0
+                
 if __name__ == '__main__':
     print("hello word")
