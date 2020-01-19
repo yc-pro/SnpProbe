@@ -187,5 +187,48 @@ def find_pair(file_in,file_out):
         fout.write(key + "\t" + ss + "\n")
     return 0
                 
+'''
+提取reads，进行再次的比对
+'''
+def ready_compair(file_in,file_in1,file_out,file_out1):
+    fout = open(file_out,'w')
+    fout1 = open(file_out1,'w')
+    mm = {}
+    mm1= {}
+    for line in open(file_in):  
+        #提取reads的id
+        vec = line.strip().split("\t")
+        id1 = vec[4]
+        id2 = vec[7]
+        mm.setdefault(id1,"")
+        mm.setdefault(id2,"")
+        mm1.setdefault(line.strip(),1)
+    id = ""
+    for line in open(file_in1):
+        #进行reads序列的寻找
+        line = line.strip()
+        if(line[0] == ">"):
+            id = line[1:]
+        else:
+            if(mm.has_key(id)):
+                mm[id] = line
+                
+    for key in mm1:
+        vec = key.split("\t")
+        id1 = vec[4]
+        id2 = vec[7]
+        reads1 = ""
+        reads2 = ""
+        if(mm.has_key(id1) and mm.has_key(id2)):
+            reads1 = mm[id1]
+            reads2 = mm[id2]
+            fout.write(key + "\t" + reads1 + "\t" + reads2+"\n")    #输出含reads的信息
+            fout1.write(">" + id1+"\n" + reads1+"\n")
+            fout1.write(">" + id2+"\n" + reads2+"\n")
+        else:
+            print(key)
+        
+    return 0
+
 if __name__ == '__main__':
-    print("hello word")
+    print(">hello word"[1:])
