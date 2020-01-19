@@ -230,5 +230,55 @@ def ready_compair(file_in,file_in1,file_out,file_out1):
         
     return 0
 
+'''
+对比对后的数据再次进行验证，如果是正确的，那么就是该reads并没发生indel，那么将snp位置和个数保存到map
+再与原有的ref的位置进行验证，如果是匹配的，这进行正确输出，否则打印到后台
+'''
+def yanzhen_compair(file_in,file_in1,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    #寻找比对信息中的snp，indel
+    for line in open(file_in):  
+        if(line[0] == "@"):
+            continue
+        vec = line.strip().split("\t")
+        id = vec[0]
+        site = vec[2] + ":" + vec[3]    #定位到referance上的比对位置
+        snp = ""
+        indel = ""
+        ciga = ""
+        
+        for ii in range(4,len(vec)):
+            ui = vec[ii]
+            veckk = ui.split(":")
+            if(ui.find("XM:i:") >= 0):  #找到分数的情况
+                snp = veckk[2]  
+            elif(ui.find("XO:i:") >= 0):    #找到indel的情况
+                indel = veckk[2] 
+            elif(ui.find("MD:Z:") >= 0):    #找到indel的情况
+                ciga = veckk[2] 
+        sk = site+"@"+snp+"@"+ciga
+        if(mm.has_key(id)):
+            print(id+"\tmany")
+        elif(indel != "0"):
+            print(id+"\tindel")
+        else:
+            mm.setdefault(id,sk)
+    #与原有的位点进行匹配
+    for line in open(file_in1):
+        vec = line.strip().split("\t")
+        id1 = vec[4]
+        id2 = vec[7]
+        if(mm.has_key(id1) and mm.has_key(id2)):
+            vec1 = mm[id1].split("@")
+            vec2 = mm[id2].split("@")
+            if(vec1[0] == vec2[0] == vec[0]):
+                fout.write(line.strip()+"\t"+vec1[1]+"@"+vec1[2]+"\t"+vec2[1]+"@"+vec2[2]+"\n")
+            else:
+                print(line.strip()+"\t"+vec1[0]+"\t"+vec2[0]+"\tid_err")
+        else:
+            print(line.strip()+"\tid_notfind") 
+    return 0
+    
 if __name__ == '__main__':
     print(">hello word"[1:])
