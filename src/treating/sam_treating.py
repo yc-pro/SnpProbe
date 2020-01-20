@@ -223,8 +223,8 @@ def ready_compair(file_in,file_in1,file_out,file_out1):
             reads1 = mm[id1]
             reads2 = mm[id2]
             fout.write(key + "\t" + reads1 + "\t" + reads2+"\n")    #输出含reads的信息
-            fout1.write(">" + id1+"\n" + reads1+"\n")
-            fout1.write(">" + id2+"\n" + reads2+"\n")
+            fout1.write(">" + vec[0]+":a\n" + reads1+"\n")
+            fout1.write(">" + vec[0]+":b\n" + reads2+"\n")
         else:
             print(key)
         
@@ -280,5 +280,32 @@ def yanzhen_compair(file_in,file_in1,file_out):
             print(line.strip()+"\tid_notfind") 
     return 0
     
+def yz_site(file_in,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    #寻找比对信息中的snp，indel
+    for line in open(file_in):  
+        if(line[0] == "@"):
+            continue
+        vec = line.strip().split("\t")
+        id = vec[0][0:-2]
+        site = vec[2] + ":" + vec[3]    #定位到referance上的比对位置
+        if(id != site):
+            print(vec[0]+"\t"+site)
+        else:
+            reads = vec[9]
+            for ii in range(4,len(vec)):
+                ui = vec[ii]
+                veckk = ui.split(":")
+                if(ui.find("XM:i:") >= 0):  #找到分数的情况
+                    snp = veckk[2]  
+                elif(ui.find("XO:i:") >= 0):    #找到indel的情况
+                    indel = veckk[2] 
+                elif(ui.find("MD:Z:") >= 0):    #找到indel的情况
+                    ciga = veckk[2] 
+            sk = site+"@"+snp+"@"+ciga
+            
+        
+        
 if __name__ == '__main__':
-    print(">hello word"[1:])
+    print("Lachesis_group18__9_contigs__length_31774926:23659499_a"[0:-2])
