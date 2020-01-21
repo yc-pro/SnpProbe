@@ -267,8 +267,8 @@ def yanzhen_compair(file_in,file_in1,file_out):
     #与原有的位点进行匹配
     for line in open(file_in1):
         vec = line.strip().split("\t")
-        id1 = vec[4]
-        id2 = vec[7]
+        id1 = vec[0] + ":a"
+        id2 = vec[0] + ":b"
         if(mm.has_key(id1) and mm.has_key(id2)):
             vec1 = mm[id1].split("@")
             vec2 = mm[id2].split("@")
@@ -305,7 +305,139 @@ def yz_site(file_in,file_out):
                     ciga = veckk[2] 
             sk = site+"@"+snp+"@"+ciga
             
-        
-        
+def get_snp_outside(reads,ciga,site):
+    vec_site = site.split(":")
+    contig = vec_site[0]
+    i_begin = int(vec_site[1])
+    mm = {}
+    for ii in range(0,len(ciga)):   #得到ciga每一个snp所在位置
+        st_ci = ciga[ii]
+        if(st_ci == "A" or st_ci == "T" or st_ci == "C" or st_ci == "G"):
+            mm.setdefault(ii,st_ci)
+    mm = sorted(mm.items(),key=lambda x:x[0],reverse=False) #对位置进行排序
+    mm_re = {}
+    i_old = 0
+    i_total = 0
+    for key in mm:
+        site = key[0]
+        base = key[1]
+        if(site == 0):
+            st_ci = "0"
+        else:
+            st_ci = ciga[i_old:site]
+        i_old = site + 1
+        i_total += int(st_ci) + 1
+        str_key = contig + ":" + str(i_begin+i_total-1)
+        reads_base = reads[i_total-1]
+        mm_re.setdefault(str_key,base+"@" + reads_base)
+        #print(st_ci,base,i_total)
+    #mm_re = sorted(mm_re.items(),key=lambda x:x[0],reverse=False)
+    return mm_re
+
+'''
+计算外坐标
+'''
+def snp_outside(file_in,file_out,file_out1,file_out2):
+    fout = open(file_out,'w')
+    fout1 = open(file_out1,'w')
+    fout2 = open(file_out2,'w')
+    for line in open(file_in):  
+        vec = line.strip().split("\t")
+        if(line.find("N") > 0):
+            fout1.write(line.strip() +  "\tN\n")    #含有N的记录，直接输出到错误
+            continue
+        mm = {}
+        reads1 = vec[8]
+        reads2 = vec[9]
+        vec1 = vec[10].split("@")
+        vec2 = vec[11].split("@")
+        i1 = int(vec1[0])
+        i2 = int(vec2[0])
+        ciga1 = vec1[1]
+        ciga2 = vec2[1]
+        str_snp_outside = ""
+        if(i1 > 0):
+            mm_temp = get_snp_outside(reads1,ciga1,vec[0])  #计算snp的位置，以及基因型
+            for key in mm_temp:
+                if(mm.has_key(key)):    #放入map，看一个位点下，有多少个基因型
+                    mm[key] += mm_temp[key] + ":"   
+                else:
+                    mm.setdefault(key,mm_temp[key] + ":")
+        if(i2 > 0):
+            mm_temp = get_snp_outside(reads2,ciga2,vec[0])
+            for key in mm_temp:
+                if(mm.has_key(key)):
+                    mm[key] += mm_temp[key] + ":"
+                else:
+                    mm.setdefault(key,mm_temp[key] + ":")
+        for key in mm:
+            vecio = mm[key][0:-1].split(":")
+            mm_kk = {}
+            str_kk = ""
+            for ik in range(0,len(vecio)):
+                message = vecio[ik]
+                str_kk = message    #用来带出一种基因型
+                if(mm_kk.has_key(message)):
+                    mm_kk[message] += 1
+                else:
+                    mm_kk.setdefault(message,1)
+            
+            if(len(mm_kk) == 1):
+                if(str_kk[-1] == "N"):
+                    fout1.write(key + "\t" + str_kk + "\tN\n") 
+                else:
+                    fout.write(key + "\t" + str_kk + "\t1\n")
+                    str_snp_outside += key + "#" + str_kk + "#1~"   #最后一个1是表示这个地方，有1种基因型
+            else:
+                vecpp = mm[key].split(":")
+                str_snp_outside += key + "#" + mm[key] + "#" + str(len(vecpp)) +"~"#第一个表示位点，第二个表示基因型，第3个表示集中基因型
+                fout.write(key + "\t" + mm[key] + "\t"+str(len(vecpp))+"\n")
+        if(len(str_snp_outside) > 0):
+            vecsnp = str_snp_outside[0:-1].split("~")
+            fout2.write(vec[0] + "\t" + vec[8] + ":" + vec[9] + "\t" + vec[10] + ":" + vec[11] + "\t" + str_snp_outside +"\t" + str(len(vecsnp))+ "\n")
+    return 0
+       
+'''
+计算内坐标
+'''
+def snp_inside(file_in,file_out):
+    fout = open(file_out,'w')
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        vec1 = vec[1][0:-1].split(":")
+        vec2 = vec[0].split(":")
+        contig = vec2[0]
+        reads_begin = int(vec2[1])
+        mm = {}
+        for ii in range(0,len(vec1)):
+            reads = vec1[ii]
+            for kk in range(0,len(reads)):
+                base = reads[kk]
+                if(mm.has_key(kk)):
+                    mm[kk] += base
+                else:
+                    mm.setdefault(kk,base)
+        ssk = ""
+        i_snp = 0
+        for key in mm:
+            vv = mm[key]
+            mm_temp = {}
+            for kk in range(0,len(vv)):
+                v_base = vv[kk]
+                mm_temp.setdefault(v_base,1)
+            str_snp = ""
+            if(len(mm_temp) > 1):
+                for kk in mm_temp:
+                    str_snp += kk + "@"
+                i_snp += 1
+                str_snp = str_snp[0:-1]
+                snp_site = reads_begin + key
+                ssk += str(snp_site) + "#" + str(key) + "#" + str_snp+ "~"
+        fout.write(line.strip() + "\t" + ssk + "\t" + str(i_snp) + "\n")
+    return 0
+ 
 if __name__ == '__main__':
-    print("Lachesis_group18__9_contigs__length_31774926:23659499_a"[0:-2])
+    #print("Lachesis_group18__9_contigs__length_31774926:23659499_a"[0:-2])
+    #snp_outside('E://super_down//tt','E://super_down//tt.he','E://super_down//tt.err','E://super_down//kk.err')
+    snp_inside('E://super_down//kt','E://super_down//kt.he')
+    #get_snp_outside('ACAATTGTTTCACAATGGCAATCTTTTGTCTGGGACAGCCAAAAATCGTGCAGTGTATCC','A46G2C3A4T','Lachesis_group6__25_contigs__length_38613331:26189578')
