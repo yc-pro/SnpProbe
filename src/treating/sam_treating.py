@@ -9,6 +9,8 @@ Created on 2020年1月15日
 进行寻找reads，比对到ref情况的统计，比对到唯一位置的，最后一列是1，比对到多个位置的是2
 倒数第2列0代表没发生indel
 '''
+import os
+
 def is_only(file_in,file_out):
     fout = open(file_out,'w')
     mm = {}
@@ -404,15 +406,19 @@ def snp_inside(file_in,file_out):
     fout = open(file_out,'w')
     for line in open(file_in):
         vec = line.strip().split("\t")
-        vec1 = vec[1][0:-1].split(":")
+        vec1 = vec[1].split(":")
         vec2 = vec[0].split(":")
         contig = vec2[0]
         reads_begin = int(vec2[1])
         mm = {}
         for ii in range(0,len(vec1)):
             reads = vec1[ii]
+            #print(len(reads),reads)
             for kk in range(0,len(reads)):
                 base = reads[kk]
+                if(kk == 59):
+                    print(vec[0],base)
+                
                 if(mm.has_key(kk)):
                     mm[kk] += base
                 else:
@@ -436,6 +442,87 @@ def snp_inside(file_in,file_out):
         fout.write(line.strip() + "\t" + ssk + "\t" + str(i_snp) + "\n")
     return 0
  
+'''
+内坐标,修改为外坐标
+'''
+def snp_inside_ref(file_in,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        vec1 = vec[5][0:-1].split("~")
+        vec2 = vec[0].split(":")
+        contig = vec2[0]
+        for ii in range(0,len(vec1)):
+            vec3 = vec1[ii].split("#")
+            site = vec3[0]
+            id = contig+":"+site
+            snp = vec3[2]
+            if(mm.has_key(id)):
+                mm[id] += snp + ":"
+            else:
+                mm.setdefault(id,snp+":")
+    for key in mm:
+        vec = mm[key][0:-1].split(":")
+        mm_temp = {}
+        for ii in range(0,len(vec)):
+            mm_temp.setdefault(vec[ii],1)
+        str_snp = ""
+        for kk in mm_temp:
+            str_snp += kk+":"
+        fout.write(key+"\t" +str_snp +"\t" + str(len(mm_temp)) + "\n")
+    return 0
+
+'''
+去掉含有N159个，还有9个没配对的对子记录，在sam文件当中
+'''
+def n_d1(file_in,file_in1,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    for line in open(file_in):
+        mm.setdefault(line.strip(),0)
+    for line in open(file_in1):
+        vec = line.strip().split("\t")
+        id = vec[0][0:-2]
+        if(mm.has_key(id)):
+            mm[id] += 1
+        else:
+            fout.write(line.strip()+"\n")
+    for key in mm:
+        if(mm[key] != 1):
+            print(key)
+    return 0
+
+'''
+验证下，内坐标转换的位点，是否都包含在外坐标的里面
+'''
+def yz_outside_inside(file_in,file_in1):
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split(" ")
+        mm.setdefault(vec[1],"")
+    for line in open(file_in1):
+        vec = line.strip().split("\t")
+        if(mm.has_key(vec[0])):
+            pass
+        else:
+            print(line.strip())
+    return 0
+
+'''
+得到位点下所有的位点信息
+'''
+def step1(file_in,file_out):
+    fout = open(file_out,'w')
+    for line in open(file_in):
+        vec = line.strip().split(":")
+        print(line.strip());
+        site = vec[1]
+        val = os.popen("samtools view ../12_29/d.sort.bam " + line.strip() + "-" + site)
+        for line in val.readlines():
+            fout.write(line.strip()+"\n")
+    return 0
+
 if __name__ == '__main__':
     #print("Lachesis_group18__9_contigs__length_31774926:23659499_a"[0:-2])
     #snp_outside('E://super_down//tt','E://super_down//tt.he','E://super_down//tt.err','E://super_down//kk.err')
