@@ -524,7 +524,7 @@ def step1(file_in,file_out):
     return 0
 
 '''
-开始去除4价及以上的位点
+开始去除2价及以上的位点
 '''
 def n_d2(file_in,file_in1,file_in2,file_out,file_out1):
     fout = open(file_out,'w')
@@ -564,6 +564,86 @@ def step2(file_in,file_out,file_name):
         val = os.popen("samtools view " + file_name+" " + line.strip() + "-" + site)
         for line in val.readlines():
             fout.write(line.strip()+"\n")
+    return 0
+
+'''
+得到每个snp位点下，包含多少成对的片段，这一步是已经确保了每个snp下，只有一种基因型的情况下的
+'''
+def get_snp_dp(file_in,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        vec1 = vec[5][0:-1].split("~")
+        vec2 = vec[0].split(":")
+        contig = vec2[0]
+        for ii in range(0,len(vec1)):
+            vec3 = vec1[ii].split("#")
+            site = vec3[0]
+            id = contig+":"+site
+            snp = vec3[2]
+            if(mm.has_key(id)):
+                mm[id] += snp + ":"
+            else:
+                mm.setdefault(id,snp+":")
+    for key in mm:
+        vec = mm[key][0:-1].split(":")
+        mm_temp = {}
+        for ii in range(0,len(vec)):
+            mm_temp.setdefault(vec[ii],1)
+        str_snp = ""
+        for kk in mm_temp:
+            str_snp += kk+":"
+        fout.write(key+"\t" +str_snp +"\t" + str(len(vec)) + "\n")
+    return 0
+
+'''
+查找覆盖深度
+@file_name,为比对的bam文件
+'''
+def step3(file_in,file_out,file_out1,file_name):
+    fout = open(file_out,'w')
+    fout1 = open(file_out1,'w')
+    mm = {}
+    for line in open(file_in):
+        vecaa = line.strip().split("\t")
+        vec = vecaa[0].split(":")
+        site = vec[1]
+        icc = int(vecaa[2]) * 2
+        acc=  0
+        val = os.popen("samtools view " + file_name+".sort.bam " + vecaa[0] + "-" + site)
+        for line_k in val.readlines():
+            acc+= 1
+        fout.write(line.strip() + "\t" + str(acc) + "\t" + str(icc) + "\n")
+        if(acc != icc):
+            fout1.write(line.strip() + "\t" + str(acc) + "\t" + str(icc) + "\n")
+    return 0
+
+'''
+开始除去那些含有纯合的位点
+'''
+def n_d3(file_in,file_in1,file_in2,file_out,file_out1):
+    fout = open(file_out,'w')
+    fout1 = open(file_out1,'w')
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        mm.setdefault(vec[0],0)
+    for line in open(file_in1):
+        vec = line.strip().split("\t")
+        veckk = vec[0].split(":")
+        id = veckk[0] + ":" + veckk[1]
+        if(mm.has_key(id)):
+            mm[id] += 1
+        else:
+            fout.write(line.strip()+"\n")
+    for line in open(file_in2):
+        vec = line.strip().split("\t")
+        id = vec[0]
+        if(mm.has_key(id)):
+            mm[id] += 1
+        else:
+            fout1.write(line.strip()+"\n")
     return 0
 
 if __name__ == '__main__':
