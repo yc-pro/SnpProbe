@@ -560,7 +560,7 @@ def step2(file_in,file_out,file_name):
     mm = {}
     for line in open(file_in):
         vec = line.strip().split(":")
-    site = vec[1]
+        site = vec[1]
         val = os.popen("samtools view " + file_name+" " + line.strip() + "-" + site)
         for line in val.readlines():
             fout.write(line.strip()+"\n")
