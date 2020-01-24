@@ -523,6 +523,49 @@ def step1(file_in,file_out):
             fout.write(line.strip()+"\n")
     return 0
 
+'''
+开始去除4价及以上的位点
+'''
+def n_d2(file_in,file_in1,file_in2,file_out,file_out1):
+    fout = open(file_out,'w')
+    fout1 = open(file_out1,'w')
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        vec1 = vec[0].split(":")
+        id = vec1[0]+":"+vec1[1]
+        mm.setdefault(id,0)
+    for line in open(file_in1):
+        vec = line.strip().split("\t")
+        id = vec[0][0:-2]
+        if(mm.has_key(id)):
+            mm[id] += 1
+        else:
+            fout.write(line.strip()+"\n")
+    for line in open(file_in2):
+        vec = line.strip().split("\t")
+        id = vec[0]
+        if(mm.has_key(id)):
+            mm[id] += 1
+        else:
+            fout1.write(line.strip()+"\n")
+    return 0
+
+'''
+去掉含多个基因型的
+@file_name,为比对的bam文件
+'''
+def step2(file_in,file_out,file_name):
+    fout = open(file_out,'w')
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split(":")
+    site = vec[1]
+        val = os.popen("samtools view " + file_name+" " + line.strip() + "-" + site)
+        for line in val.readlines():
+            fout.write(line.strip()+"\n")
+    return 0
+
 if __name__ == '__main__':
     #print("Lachesis_group18__9_contigs__length_31774926:23659499_a"[0:-2])
     #snp_outside('E://super_down//tt','E://super_down//tt.he','E://super_down//tt.err','E://super_down//kk.err')
