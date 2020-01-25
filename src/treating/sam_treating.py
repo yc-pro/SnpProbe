@@ -601,9 +601,10 @@ def get_snp_dp(file_in,file_out):
 查找覆盖深度
 @file_name,为比对的bam文件
 '''
-def step3(file_in,file_out,file_out1,file_name):
+def step3(file_in,file_out,file_out1,file_out2,file_name):
     fout = open(file_out,'w')
     fout1 = open(file_out1,'w')
+    fout2 = open(file_out2,'w')
     mm = {}
     for line in open(file_in):
         vecaa = line.strip().split("\t")
@@ -612,10 +613,14 @@ def step3(file_in,file_out,file_out1,file_name):
         icc = int(vecaa[2]) * 2
         acc=  0
         val = os.popen("samtools view " + file_name+".sort.bam " + vecaa[0] + "-" + site)
+        mmk = {}
         for line_k in val.readlines():
+            mmk.setdefault(line_k.strip(),1)
             acc+= 1
         fout.write(line.strip() + "\t" + str(acc) + "\t" + str(icc) + "\n")
         if(acc != icc):
+            for kk in mmk:
+                fout2.write(kk+"\n")
             fout1.write(line.strip() + "\t" + str(acc) + "\t" + str(icc) + "\n")
     return 0
 
@@ -644,6 +649,45 @@ def n_d3(file_in,file_in1,file_in2,file_out,file_out1):
             mm[id] += 1
         else:
             fout1.write(line.strip()+"\n")
+    return 0
+
+'''
+统计位点之间的差值
+'''
+def tj_site_cha(file_in,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    mm1 = {}
+    old_scaff = ""
+    old_i_site = 0
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        scaff = vec[2]
+        i_site = int(vec[3])
+        id = scaff + ":" + vec[3]
+        if(mm1.has_key(id)):
+            mm1[id] += 1
+        else:
+            mm1.setdefault(id,1)
+        
+        if(old_scaff != scaff):
+            old_saff = scaff
+            old_i_site = i_site
+        elif(old_scaff == scaff):
+            temp_vv = i_site - old_i_site 
+            if(temp_vv > 0):
+                ii_det = temp_vv / 1000;
+                if(mm.has_key(ii_det)):
+                    mm[ii_det] += 1
+                else:
+                    mm.setdefault(ii_det,1)
+    
+    for key in mm:
+        fout.write(str(key) + "\t" + str(mm[key]) + "\n")
+    for key in mm1:
+        ii = mm1[key]
+        if(ii != 2):
+            print(key+"\t" + str(ii))
     return 0
 
 if __name__ == '__main__':
