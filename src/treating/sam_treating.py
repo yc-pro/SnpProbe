@@ -474,6 +474,25 @@ def snp_inside_ref(file_in,file_out):
     return 0
 
 '''
+去掉1价以外的比对记录，在sam文件当中
+'''
+def n_d0(file_in,file_in1,file_out,file_out1):
+    fout = open(file_out,'w')
+    fout1 = open(file_out1,'w')
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        mm.setdefault(vec[0],0)
+    for line in open(file_in1):
+        vec = line.strip().split("\t")
+        id = vec[0][0:-2]
+        if(mm.has_key(id)):
+            fout.write(line.strip()+"\n")
+        else:
+            fout1.write(line.strip()+"\n")
+    return 0
+
+'''
 去掉含有N159个，还有9个没配对的对子记录，在sam文件当中
 '''
 def n_d1(file_in,file_in1,file_out):
@@ -658,40 +677,69 @@ def tj_site_cha(file_in,file_out):
     fout = open(file_out,'w')
     mm = {}
     mm1 = {}
+    mm3 = {}
     old_scaff = ""
     old_i_site = 0
     for line in open(file_in):
-        vec = line.strip().split("\t")
-        scaff = vec[2]
-        i_site = int(vec[3])
-        id = scaff + ":" + vec[3]
+        vec = line.strip().split(":")
+        scaff = vec[0]
+        i_site = int(vec[1])
+        id = line.strip()
         if(mm1.has_key(id)):
             mm1[id] += 1
         else:
             mm1.setdefault(id,1)
         
         if(old_scaff != scaff):
-            old_saff = scaff
+            old_scaff = scaff
             old_i_site = i_site
         elif(old_scaff == scaff):
             temp_vv = i_site - old_i_site 
             if(temp_vv > 0):
                 ii_det = temp_vv / 1000;
+                if(ii_det > 100):
+                    print(line)
                 if(mm.has_key(ii_det)):
                     mm[ii_det] += 1
                 else:
                     mm.setdefault(ii_det,1)
+                    
+                if(mm3.has_key(ii_det)):
+                    mm3[ii_det] += temp_vv
+                else:
+                    mm3.setdefault(ii_det,temp_vv)
+                    
+                old_i_site = i_site
     
     for key in mm:
-        fout.write(str(key) + "\t" + str(mm[key]) + "\n")
+        i_begin = key * 1000
+        i_end = (key + 1) * 1000
+        fout.write(str(i_begin) + "\t" + str(i_end) + "\t" + str(mm[key]) + "\t" + str(mm3[key])  + "\n")
     for key in mm1:
         ii = mm1[key]
         if(ii != 2):
             print(key+"\t" + str(ii))
     return 0
 
+'''
+去掉1价以外的比对记录，在sam文件当中
+'''
+def get_jia_outside(file_in,file_in1,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        mm.setdefault(vec[0],0)
+    for line in open(file_in1):
+        vec = line.strip().split("\t")
+        id = vec[0]
+        if(mm.has_key(id)):
+            fout.write(line.strip()+"\n")
+    return 0
+
 if __name__ == '__main__':
     #print("Lachesis_group18__9_contigs__length_31774926:23659499_a"[0:-2])
     #snp_outside('E://super_down//tt','E://super_down//tt.he','E://super_down//tt.err','E://super_down//kk.err')
-    snp_inside('E://super_down//kt','E://super_down//kt.he')
+    #snp_inside('E://super_down//kt','E://super_down//kt.he')
+    tj_site_cha('E://super_down//lo','E://super_down//lo.he')
     #get_snp_outside('ACAATTGTTTCACAATGGCAATCTTTTGTCTGGGACAGCCAAAAATCGTGCAGTGTATCC','A46G2C3A4T','Lachesis_group6__25_contigs__length_38613331:26189578')
