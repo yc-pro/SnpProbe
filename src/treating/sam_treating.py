@@ -737,9 +737,97 @@ def get_jia_outside(file_in,file_in1,file_out):
             fout.write(line.strip()+"\n")
     return 0
 
+'''
+开始挑选代表
+'''
+def select_reads(file_in,file_out,file_name):
+    fout = open(file_out,'w')
+    for line in open(file_in):
+        vecaa = line.strip().split("\t")
+        vec = vecaa[0].split(":")
+        site = vec[1]
+        val = os.popen("samtools view " + file_name+".sort.bam " + vecaa[0] + "-" + site)
+        mmk = {}
+        mmreads = {}
+        contig = vec[0]
+        for line_k in val.readlines():
+            vec_k = line_k.strip().split("\t")
+            vec_k1 = vec_k[0].split(":")
+            reads = vec_k[9]
+            id = vec_k[0][0:-2]
+            if(vec_k1[0] == vec[0]):
+                site_k = int(vec_k1[1])
+                if(mmk.has_key(site_k)):
+                    mmk[site_k] += 1
+                else:
+                    mmk.setdefault(site_k,1)
+                if(mmreads.has_key(id)):
+                    mmreads[id] += reads + ":"
+                else:
+                    mmreads.setdefault(id,reads+":")
+            else:
+                print(line.strip());
+        
+        mmk = sorted(mmk.items(),key=lambda x:x[0],reverse=False) #对位置进行排序
+        i_len = len(mmk)
+        i_t = i_len /2
+        i_i = 0
+        str_out = ""
+        i_select = ""
+        for key in mmk:
+            site = key[0]
+            base = key[1]
+            if(base == 2):
+                str_out += str(site) + ":"
+                if(i_i == i_t):
+                    i_select = contig + ":" + str(site)
+            else:
+                print(line.strip())
+            i_i += 1
+        select_reads = mmreads[i_select]
+        fout.write(vecaa[0] + "\t" + vecaa[1] + "\t" + str(i_len) + "\t" + str_out + "\t" + i_select + "\t" + select_reads + "\n")
+    return 0
+
+'''
+统计杂合还是纯合
+'''
+def tj_1(file_in,file_in1,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    mm1 = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        mm.setdefault(vec[0],vec[1][0:-1])
+        vec1 = vec[1][0:-1].split(":")
+        mm1.setdefault(vec1[1],0)
+        mm1.setdefault(vec1[0],0)
+        
+    for line in open(file_in1):
+        vec = line.strip().split("\t")
+        id = vec[0]
+        if(mm1.has_key(id)):
+            mm1[id] = int(vec[1])
+    
+    for key in mm:
+        vec = mm[key].split(":")
+        i1 = mm1[vec[0]]
+        i2 = mm1[vec[1]]
+        str_snp = "N"
+        if(i1 > 0 and i2 >0 ):
+            str_snp = "AB"
+        elif(i1 > 0 and i2 == 0):
+            str_snp = "AA"
+        elif(i1 == 0 and i2 > 0):
+            str_snp = "BB"
+        
+        fout.write(key + "\t" + mm[key] + "\t" + str(i1) + ":" + str(i2) + "\t" + str_snp + "\n")
+    return 0
+
 if __name__ == '__main__':
     #print("Lachesis_group18__9_contigs__length_31774926:23659499_a"[0:-2])
     #snp_outside('E://super_down//tt','E://super_down//tt.he','E://super_down//tt.err','E://super_down//kk.err')
     #snp_inside('E://super_down//kt','E://super_down//kt.he')
-    tj_site_cha('E://super_down//lo','E://super_down//lo.he')
+    #tj_site_cha('E://super_down//lo','E://super_down//lo.he')
+    i = 17
+    print(i/2 + 1)
     #get_snp_outside('ACAATTGTTTCACAATGGCAATCTTTTGTCTGGGACAGCCAAAAATCGTGCAGTGTATCC','A46G2C3A4T','Lachesis_group6__25_contigs__length_38613331:26189578')
