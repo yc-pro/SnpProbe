@@ -10,6 +10,7 @@ Created on 2020年1月15日
 倒数第2列0代表没发生indel
 '''
 import os
+import numpy as np
 
 def is_only(file_in,file_out):
     fout = open(file_out,'w')
@@ -823,11 +824,85 @@ def tj_1(file_in,file_in1,file_out):
         fout.write(key + "\t" + mm[key] + "\t" + str(i1) + ":" + str(i2) + "\t" + str_snp + "\n")
     return 0
 
+'''
+将50条的统计信息汇总
+file_in，50条鱼的名称
+file_name，路径名称
+'''
+def tj_2(file_in,file_in1,file_name,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    mm1 = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        mm1.setdefault(vec[0],"")
+        mm.setdefault(vec[0],"")
+        
+    for linekk in open(file_in1):
+        linekk = linekk.strip()
+        file_aa = file_name + "/" + linekk + ".tj"
+        for line in open(file_aa):
+            vec = line.strip().split("\t")
+            vec1 = vec[2].split(":")
+            i_total = int(vec1[0]) + int(vec1[1])
+            id = vec[0]
+            if(mm1.has_key(id)):
+                mm[id] += str(i_total) + ","
+                mm1[id] += vec[2] + ","
+    
+    for key in mm:
+        ik = mm1[key]
+        fout.write(key + "\t" + mm[key] + "\t" + ik + "\n")
+    return 0
+
+'''
+计算均值,方差和标准差
+'''
+def reads_mean(file_in,file_out,file_out1,file_out2):
+    fout = open(file_out,'w')
+    fout1 = open(file_out1,'w')
+    fout2 = open(file_out2,'w')
+    mm = {}
+    mmstd = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        vec1 = vec[1][0:-1].split(",")
+        ll = []
+        for key in range(0,len(vec1)):
+            kk = int(vec1[key])
+            ll.append(kk)
+        while(len(ll) < 50):
+            ll.append(0)
+        i_mean = np.mean(ll)#均值
+        i_var = np.var(ll,ddof=1)#方差
+        i_std = np.std(ll,ddof=1)#标准差
+        ii = round(i_mean,1)    #四舍五入
+        ii_std = round(i_std,1)
+        if(mm.has_key(ii)):
+            mm[ii] += 1
+        else:
+            mm.setdefault(ii,1)
+        if(mmstd.has_key(ii_std)):
+            mmstd[ii_std] += 1
+        else:
+            mmstd.setdefault(ii_std,1)            
+            
+        fout.write(line.strip()+"\t"+str(i_mean)+"\t"+str(i_var)+"\t"+str(ii_std)+"\n")
+    for key in mm:
+        fout1.write(str(key)+"\t"+str(mm[key])+"\n");
+    print("===")
+    for key in mmstd:
+        fout2.write(str(key)+"\t"+str(mmstd[key])+"\n");    
+    return 0
+
 if __name__ == '__main__':
     #print("Lachesis_group18__9_contigs__length_31774926:23659499_a"[0:-2])
     #snp_outside('E://super_down//tt','E://super_down//tt.he','E://super_down//tt.err','E://super_down//kk.err')
     #snp_inside('E://super_down//kt','E://super_down//kt.he')
     #tj_site_cha('E://super_down//lo','E://super_down//lo.he')
-    i = 17
-    print(i/2 + 1)
+    i = 20.3421417798 
+    ii = round(i,1)
+    print(ii)
+    #reads_mean('/Users/yangcheng/Documents/kk','/Users/yangcheng/Documents/kk.a')
+    #mean_sd('/Users/yangcheng/Documents/log_mean')
     #get_snp_outside('ACAATTGTTTCACAATGGCAATCTTTTGTCTGGGACAGCCAAAAATCGTGCAGTGTATCC','A46G2C3A4T','Lachesis_group6__25_contigs__length_38613331:26189578')
