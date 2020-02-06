@@ -5,6 +5,53 @@ Created on 2020年1月15日
 @author: Genome
 '''
 
+def sample_cl(file_in,file_out):
+    fout = open(file_out,'w')
+    ic = 1
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        ii = int(vec[1])
+        if(ii >= 4):
+            fout.write(">" + str(ic) + "\n" + vec[0]+"\n")
+            ic += 1
+    return 0
+
+def x1_is_pair(file_in,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        if(line[0] != "@"):
+            site = vec[2] +":"+vec[3]
+            if(mm.has_key(site)):
+                mm[site] += vec[0] +":"
+            else:
+                mm.setdefault(site,vec[0]+":")
+    for key in mm:
+        vec = mm[key][0:-1].split(":")
+        if(len(vec) == 2):
+            fout.write(key+"\t"+vec[0] + "\t"+vec[1]+"\n")
+    return 0
+
+def x1_pair_del(file_in,file_in1,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        mm.setdefault(vec[1],"")
+        mm.setdefault(vec[2],"")
+    id = ""
+    for line in open(file_in1):
+        line = line.strip()
+        if(line[0] == ">"):
+            id = line[1:]
+        else:
+            if(mm.has_key(id)):
+                mm[id] += "line"
+    for key in mm:
+        fout.write(key+"\t"+mm[key]+"\n")
+    return 0
+
 '''
 进行寻找reads，比对到ref情况的统计，比对到唯一位置的，最后一列是1，比对到多个位置的是2
 倒数第2列0代表没发生indel
@@ -463,7 +510,7 @@ def snp_inside_ref(file_in,file_out):
                 mm[id] += snp + ":"
             else:
                 mm.setdefault(id,snp+":")
-    for key in mm:
+    for key in mm:  #统计每个位点有多少SNP
         vec = mm[key][0:-1].split(":")
         mm_temp = {}
         for ii in range(0,len(vec)):
@@ -585,6 +632,7 @@ def step2(file_in,file_out,file_name):
         for line in val.readlines():
             fout.write(line.strip()+"\n")
     return 0
+
 
 '''
 得到每个snp位点下，包含多少成对的片段，这一步是已经确保了每个snp下，只有一种基因型的情况下的
@@ -895,6 +943,95 @@ def reads_mean(file_in,file_out,file_out1,file_out2):
         fout2.write(str(key)+"\t"+str(mmstd[key])+"\n");    
     return 0
 
+def final_pair(file_in,file_in1,file_out,file_out1):
+    fout = open(file_out,'w')
+    fout1 = open(file_out1,'w')
+    mm = {}
+    for line in open(file_in):
+        line = line.strip()
+        mm.setdefault(line,"")
+        
+    for line in open(file_in1):
+        vec = line.strip().split("\t")
+        vec1 = vec[3].split("#")
+        id = vec1[0]
+        if(mm.has_key(id)):
+            fout.write(line.strip()+"\t")
+        else:
+            fout1.write(line.strip()+"\t")
+    return 0
+
+def tj_overlap(file_in,file_out):
+    fout = open(file_out,'w')
+    i_sum = 0
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        vec1 = vec[2][0:-1].split("#")
+        mm = {}
+        for ii in range(0,len(vec1)):
+            vec2 = vec1[ii].split(":")
+            i_site = int(vec2[1])
+            mm.setdefault(i_site,0)
+        max_key = max(mm) #找到最小得分
+        min_key = min(mm)
+        i_det = max_key - min_key + 60
+        i_sum += i_det
+        fout.write(line.strip() + "\t" + str(min_key) + "\t" + str(max_key) + "\t" + str(i_det) + "\n")
+    print(i_sum)
+    return 0
+
+'''
+得到每个snp位点下，包含多少成对的片段，这一步是已经确保了每个snp下，只有一种基因型的情况下的
+'''
+def snp_dp(file_in,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        vec1 = vec[5][0:-1].split("~")
+        vec2 = vec[0].split(":")
+        contig = vec2[0]
+        
+        mm1 = {} #判断该reads的旁边是否还有与ref不一致的纯合型
+        veck1 = vec[3][0:-1].split("~")
+        for ik in range(0,len(veck1)):
+            ik_id = veck1[ik].split("#")[0]
+            mm1.setdefault(ik_id,"N")
+            
+        for ii in range(0,len(vec1)):
+            vec3 = vec1[ii].split("#")
+            site = vec3[0]
+            id = contig+":"+site
+            snp = vec3[2]
+            if(mm1.has_key(id)):
+                mm1[id] = snp
+            else:
+                mm1.setdefault(id,snp)
+        
+        for key in mm1:
+            snp = mm1[key]
+            if(mm.has_key(key)):
+                mm[key] += snp + ":"
+            else:
+                mm.setdefault(key,snp+":")
+
+                    
+                    
+    for key in mm:
+        vec = mm[key][0:-1].split(":")
+        mm_temp = {}
+        for ii in range(0,len(vec)):
+            mm_temp.setdefault(vec[ii],1)
+        str_snp = ""
+        iK = len(vec)
+        for kk in mm_temp:
+            str_snp += kk+":"
+            if(kk == "N"):
+                ik = 0 #如果是含有旁边是否还有与ref不一致的纯合型，那么把该位点的信息去掉，在做位点扫描的时候，通过判断深度，因为为0，所以该位点会去掉
+        fout.write(key+"\t" +str_snp +"\t" + str(ik) + "\n")
+    return 0
+
 if __name__ == '__main__':
     #print("Lachesis_group18__9_contigs__length_31774926:23659499_a"[0:-2])
     #snp_outside('E://super_down//tt','E://super_down//tt.he','E://super_down//tt.err','E://super_down//kk.err')
@@ -902,7 +1039,10 @@ if __name__ == '__main__':
     #tj_site_cha('E://super_down//lo','E://super_down//lo.he')
     i = 20.3421417798 
     ii = round(i,1)
-    print(ii)
+    ss = ">12"
+    print(ss[1:])
+    #tj_overlap('/Users/yangcheng/Documents/kk','/Users/yangcheng/Documents/kk.a')
+    #snp_dp('/Users/yangcheng/Documents/kl','/Users/yangcheng/Documents/kl.a')
     #reads_mean('/Users/yangcheng/Documents/kk','/Users/yangcheng/Documents/kk.a')
     #mean_sd('/Users/yangcheng/Documents/log_mean')
     #get_snp_outside('ACAATTGTTTCACAATGGCAATCTTTTGTCTGGGACAGCCAAAAATCGTGCAGTGTATCC','A46G2C3A4T','Lachesis_group6__25_contigs__length_38613331:26189578')
