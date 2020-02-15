@@ -191,7 +191,7 @@ def is_only_ordely(file_in,file_out,file_out1):
             
             mm_re = is_minfen(mm)   #先把旧信息写入，找到该reads的最小得分，并返回等分信息的map
             for key in mm_re:
-                fout.write(mm_re[key] + "\t" + str(key) + "\n") #进行文件写入
+                fout.write(mm_re[key] + "\t" + str(key) + "\n") #进行文件写入,多个最小得分，则输出多行
                 
             old_id = min(mm)
             if(mm_true.has_key(old_id)):
@@ -1030,6 +1030,21 @@ def snp_dp(file_in,file_out):
             if(kk == "N"):
                 ik = 0 #如果是含有旁边是否还有与ref不一致的纯合型，那么把该位点的信息去掉，在做位点扫描的时候，通过判断深度，因为为0，所以该位点会去掉
         fout.write(key+"\t" +str_snp +"\t" + str(ik) + "\n")
+    return 0
+
+def x5_fa(file_in,file_out):
+    fout = open(file_out,'w')
+    id = ""
+    for line in open(file_in):
+        line = line.strip()
+        if(line[0] == ">"):
+            id = line[1:]
+        else:
+            fout.write(">"+id+"_a\n" + line+"\n")
+            fout.write(">"+id+"_b\n" + line+"\n")
+            fout.write(">"+id+"_c\n" + line+"\n")
+            fout.write(">"+id+"_d\n" + line+"\n")
+            fout.write(">"+id+"_e\n" + line+"\n")
     return 0
 
 if __name__ == '__main__':
