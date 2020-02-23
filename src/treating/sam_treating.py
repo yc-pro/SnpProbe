@@ -4,6 +4,7 @@ Created on 2020年1月15日
 
 @author: Genome
 '''
+from cffi.ffiplatform import LIST_OF_FILE_NAMES
 
 def sample_cl(file_in,file_out):
     fout = open(file_out,'w')
@@ -1047,6 +1048,155 @@ def x5_fa(file_in,file_out):
             fout.write(">"+id+"_e\n" + line+"\n")
     return 0
 
+'''
+在sam文件中寻找只有一次比对记录的记录
+'''
+def find_only_one(file_in,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    mm1 = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        if(line[0] != "@"):
+            id = vec[0]
+            mm1.setdefault(id,line.strip())
+            if(mm.has_key(id)):
+                mm[id] += 1
+            else:
+                mm.setdefault(id,1)
+    for key in mm:
+        if(mm[key] == 1):
+            fout.write(mm1[key]+"\n")
+    return 0
+
+'''
+寻找配对信息
+'''
+def static_dp(file_in,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        site = vec[2] + ":" + vec[3] #readsid
+        reads = vec[9]
+        if(mm.has_key(site)) :
+            mm[site] += reads + "@"
+        else:
+            mm.setdefault(site,reads+"@")
+    print("total site->" + len(mm))
+    for key in mm:
+        vec = mm[key][0:-1].split("@")
+        ss = str(len(vec)) + "\t"
+        for ii in range(0,len(vec)):
+            ss += vec[ii] + "\t"
+        fout.write(key + "\t" + ss + "\n")
+    return 0
+
+def tt(file_in,file_in1,file_out,file_out1):
+    fout = open(file_out,'w')
+    fout1 = open(file_out1,'w')
+    mm = {}
+    for line in open(file_in):
+        line = line.strip()
+        mm.setdefault(line,0)
+    for linek in open(file_in1):
+        for line in open(linek):
+            line = line.strip()
+            if(mm.has_key(line)):
+                mm[line] = 1
+            else:
+                fout.write(line+"\n")
+    for key in mm:
+        fout1.write(key+"\t"+str(mm[key]) + "\n")
+    return 0
+
+def aa_1_2(file_in):
+    for linek in open(file_in):
+        linek = linek.strip()
+        fout = open("50/" + linek+".1",'w')
+        fout1 = open("50/" + linek+".2",'w')
+        for line in open("del/" + linek):
+
+            vec = line.strip().split("\t")
+            if(vec[1] == "1"):
+                fout.write(vec[0]+"\n")
+            elif(vec[1] == "2"):
+                fout1.write(vec[0]+"\n")
+    return 0
+
+def yz_pair(file_in):
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        site = vec[2] + ":" + vec[3] #readsid
+        reads = vec[0][0:-2]
+        if(reads != site) :
+            print(line)
+        else:
+            if(mm.has_key(site)):
+                mm[site] += 1
+            else:
+                mm.setdefault(site,1)
+    for key in mm:
+        if(mm[key] != 2):
+            print(key)
+    return 0
+
+def yz_kk(file_in,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        site = vec[2] + ":" + vec[3] #readsid
+        id = vec[0][0:-2]
+        reads = vec[9]
+        if(id != site) :
+            mm.setdefault(id,1)
+        else:
+            if(reads.find("N") > 0):
+                mm.setdefault(id,2)
+    for key in mm:
+        fout.write(key+"\t" + str(mm[key]) + "\n")
+    return 0
+
+ '''
+ '''
+def del_k1(file_in,file_in1,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        mm.setdefault(vec[0],1)
+    for line in open(file_in1):
+        vec = line.strip().split("\t")
+        id = vec[0][0:-2]
+        if(not mm.has_key(id)):
+            fout.write(line.strip() + "\n")
+    return 0
+
+def frequence_50_all(file_name):
+    file_in = "50_chai/"+file_name
+    file_in1 = "all_12/"+file_name+".12"
+    file_out = "50_shai/"+file_name
+    fout = open(file_out,'w')
+    mm = {}
+    for line in open(file_in):
+        line = line.strip()
+        if(mm.has_key(line)):
+            mm[line] += 1
+        else:
+            mm.setdefault(line,1)
+    for line in open(file_in1):
+        vec = line.strip().split("\t")
+        id = vec[0]
+        if(mm.has_key(id)):
+            fout.write(id + "\t"+ str(mm[id])+"\t"+ vec[1] + "\n")
+            mm.pop(id)
+    for key in mm:
+        fout.write(key + "\t"+ str(mm[key])+"\t0\n")
+    return 0
+
+
 if __name__ == '__main__':
     #print("Lachesis_group18__9_contigs__length_31774926:23659499_a"[0:-2])
     #snp_outside('E://super_down//tt','E://super_down//tt.he','E://super_down//tt.err','E://super_down//kk.err')
@@ -1055,7 +1205,7 @@ if __name__ == '__main__':
     i = 20.3421417798 
     ii = round(i,1)
     ss = ">12"
-    print(ss[1:])
+    print("Lachesis_group15__31_contigs__length_33351419:32305858_b "[0:-3])
     #tj_overlap('/Users/yangcheng/Documents/kk','/Users/yangcheng/Documents/kk.a')
     #snp_dp('/Users/yangcheng/Documents/kl','/Users/yangcheng/Documents/kl.a')
     #reads_mean('/Users/yangcheng/Documents/kk','/Users/yangcheng/Documents/kk.a')
