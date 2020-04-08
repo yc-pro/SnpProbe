@@ -2222,7 +2222,31 @@ def is_only_cc(file_in,file_out):
         else:
             print(key+"\t"+mm[key])
                 
-
+def del_reverse(file_in,file_in1,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    mm1 = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        site = vec[0][0:-2]
+        id = vec[2]+":"+vec[3]
+        mm.setdefault(site,"")
+        mm1.setdefault(id,"")
+    is_type1 = 0
+    is_type2 = 0
+    for line in open(file_in1):
+        vec = line.strip().split("\t")
+        id = vec[0]
+        is_type = 0
+        if(mm.has_key(id)):
+            is_type = 1
+            is_type1 += 1
+        elif(mm1.has_key(id)):
+            is_type = 2
+            is_type2 += 1
+        fout.write(line.strip()+"\t"+str(is_type)+"\n")
+    print(is_type1,is_type2)
+        
 if __name__ == '__main__':
     #print("Lachesis_group18__9_contigs__length_31774926:23659499_a"[0:-2])
     #snp_outside('E://super_down//tt','E://super_down//tt.he','E://super_down//tt.err','E://super_down//kk.err')

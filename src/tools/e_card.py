@@ -227,14 +227,14 @@ def ya_6(file_in,file_in1,file_out,file_out1):
         #for kk in range(0,5):
         it = 1
         for kk in mmk:
-            if(it_p < 5):
+            if(it_p < 3):
                 fout.write(">"+key+"_a_"+str(it)+"\n"+kk+"\n")
             it_p += 1
             it += 1
         it = 1
         it_p = 0
         for kk in mmw:
-            if(it_p < 5):
+            if(it_p < 3):
                 fout.write(">"+key+"_b_"+str(it)+"\n"+kk+"\n")
             it_p += 1
             it += 1
