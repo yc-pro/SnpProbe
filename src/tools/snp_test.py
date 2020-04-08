@@ -6191,7 +6191,21 @@ def tiqu_x2_det(file_in):
             it += 1
         if(it != ii):
             print(line.strip())
-                    
+                
+def t2_t3_c(file_in,file_in1,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    for line in open(file_in):
+        line = line.strip()
+        if(not mm.has_key(id)):
+            mm.setdefault(line,1)
+        else:
+            mm[line] += 1
+    for line in open(file_in1):
+        line = line.strip()
+        if(mm.has_key(line)):
+            fout.write(line)
+              
 if __name__ == '__main__':
     #pp_cs('D://down1//s_k1','D://down1//s_k','D://down1//s_k2')
     #get_snp_reads('D://down1//log_aa','D://down1//log_bb')

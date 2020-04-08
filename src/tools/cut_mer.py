@@ -95,17 +95,27 @@ def test():
         fout.write(str(ii)+"\n")
     return 0
 
-
-
+def create_igv():
+    ss = "TTTGCTCACTCTCAAGCCATCCTAGGTGTATCTTCTTTTAGACGAACACAATCAGATTAGTATATTTAAAAATATCCTTA"
+    mm = cut_reads(ss,60)
+    ii = 1
+    for key in mm:
+        ii += 1
+        print(">+"+str(ii)+"\n"+mm[key])
+    ss = dd_reverse(ss)
+    mm = cut_reads(ss,60)
+    ii = 1
+    for key in mm:
+        ii += 1
+        print(">-"+str(ii)+"\n"+mm[key])
+    #print(ii)
+    
 if __name__ == '__main__':
     #pp_cs('D://down1//s_k1','D://down1//s_k','D://down1//s_k2')
     #get_snp('D://down1//tt','D://down1//tt_k')
     #reduance_snp('D://down1//tt_k','D://down1//tt_w')
     #det_tj('D://down1//4.w','D://down1//4.d')
     #cut('/Users/yangcheng/Documents/超算数据/t_1.fq','/Users/yangcheng/Documents/超算数据/t_2.fq','/Users/yangcheng/Documents/超算数据/t_cut/')
-    '''
-    mm = cut_reads("ATGGAAGCTAAAATACAGGAAGTTACGCTTACTCAGTAGTCCTTGAACTGATTTTTTATATTTGAGTGCACATTCAACTTAATCTCCATTTAATATTTGAAAAAAAGAAATAGATTTGTGAAAGGCTGCAAAAAAAGAAATTGCCCCTGAC",60)
-    for key in mm:
-        print(key,mm[key])
-    '''
-    cut('D://down1//t1','D://down1//t2','D://down1//t_cut')
+    create_igv()
+    
+    #cut('D://down1//t1','D://down1//t2','D://down1//t_cut')
