@@ -23,11 +23,12 @@ def dd_reverse(str_in):
     return str_r1
        
 def cut(file_in1,file_in2,file_out):
-    i_max = 130000000
+    i_max = 200000000
     #i_max = 13
     cut_len = 60
     i_cc = 0
-    i_len = 149
+    i_len = 147
+    max_len = 153
     while(i_cc <= i_max):
         with open(file_in1) as fp1, open(file_in2) as fp2: 
             i_total = 1;
@@ -40,8 +41,10 @@ def cut(file_in1,file_in2,file_out):
                     i_current_len += 1
                     r_line_r1 = dd_reverse(line_r1)
                     r_line_r2 = dd_reverse(line_r2)
+                    r1_n = line_r1.find("N")
+                    r2_n = line_r2.find("N")
                     if(i_cc <= i_max):
-                        if(len(line_r1) >= i_len):
+                        if(len(line_r1) >= i_len and len(line_r1) <= max_len and r1_n < 0):
                             i_cc += 2
                             mm_re_1 = cut_reads(line_r1,cut_len)
                             mm_re_2 = cut_reads(r_line_r1,cut_len)
@@ -53,7 +56,7 @@ def cut(file_in1,file_in2,file_out):
                                 key = mm_re_2[site][0:4]
                                 fout = open(file_out+key,'a')
                                 fout.write(">"+str(i_current_len)+"_"+str(site)+"_1-\t" + mm_re_2[site] + "\n")
-                        if(len(r_line_r2) >= i_len):
+                        if(len(line_r2) >= i_len and len(line_r2) <= max_len and r2_n < 0):
                             i_cc += 2
                             mm_re_1 = cut_reads(line_r2,cut_len)
                             mm_re_2 = cut_reads(r_line_r2,cut_len)   
@@ -96,18 +99,18 @@ def test():
     return 0
 
 def create_igv():
-    ss = "TTTGCTCACTCTCAAGCCATCCTAGGTGTATCTTCTTTTAGACGAACACAATCAGATTAGTATATTTAAAAATATCCTTA"
+    ss = "AATACACACTTATTAAGATGATGTACAGTGGTGGCGATTTTATAGATCATACTGGATATTGCATCTCAGAACTGCCGTTACCACAAGTAATTTTTCAAAGAAATGACAGTATTTGTGCCAAGGCGAGGGCACATATGCACACAGTTTAAAG"
     mm = cut_reads(ss,60)
     ii = 1
     for key in mm:
         ii += 1
-        print(">+"+str(ii)+"\n"+mm[key])
+        print(">3+"+str(ii)+"\n"+mm[key])
     ss = dd_reverse(ss)
     mm = cut_reads(ss,60)
     ii = 1
     for key in mm:
         ii += 1
-        print(">-"+str(ii)+"\n"+mm[key])
+        print(">3-"+str(ii)+"\n"+mm[key])
     #print(ii)
     
 if __name__ == '__main__':
@@ -117,5 +120,6 @@ if __name__ == '__main__':
     #det_tj('D://down1//4.w','D://down1//4.d')
     #cut('/Users/yangcheng/Documents/超算数据/t_1.fq','/Users/yangcheng/Documents/超算数据/t_2.fq','/Users/yangcheng/Documents/超算数据/t_cut/')
     create_igv()
-    
+    it = "NTTGCTCACTCTCAAGCCATCCTAGGTGTA".find("N")
+    print(it)
     #cut('D://down1//t1','D://down1//t2','D://down1//t_cut')

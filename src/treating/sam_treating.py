@@ -1581,7 +1581,7 @@ def get_id_samtools(file_in,file_out):
     for line in open(file_in):
         vec = line.strip().split("\t")
         vec1 = vec[0].split(":")
-        val = os.popen("samtools view 12_29/a5.sort.bam " + vec[0] + "-" + vec1[1])
+        val = os.popen("samtools view 12_29/s5.sort.bam " + vec[0] + "-" + vec1[1])
         st_ss = ""
         int_ss = 0
         for linew in val.readlines():
@@ -2247,6 +2247,99 @@ def del_reverse(file_in,file_in1,file_out):
         fout.write(line.strip()+"\t"+str(is_type)+"\n")
     print(is_type1,is_type2)
         
+def s5_pj(file_in,file_in1,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        site = vec[0]
+        mm.setdefault(site,line.strip())
+    for line in open(file_in1):
+        vec = line.strip().split("\t")
+        id = vec[0]
+        if(mm.has_key(id)):
+            vv = mm[id]
+            fout.write(vv+"\t"+vec[1]+"\t"+vec[2]+"\n")
+        else:
+            print(id)
+    
+def cuo_pei12(file_in,file_out,file_out1):
+    fout = open(file_out,'w')
+    fout1 = open(file_out1,'w')
+    mm = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        site = vec[0]
+        id = vec[2]+":"+vec[3]
+        if(mm.has_key(site)):
+            mm[site] += id+"@"
+        else:
+            mm.setdefault(site,id+"@")
+    mmk = {}
+    for key in mm:
+        vv = mm[key][0:-1].split("@")
+        id = key[0:-2]
+        if(len(vv) == 1):
+            if(id == vv[0]):
+                fout.write(key+"\t1\t1\t"+vv[0]+"\n")
+                if(mmk.has_key(id)):
+                    mmk[id] += key+"@"
+                else:
+                    mmk.setdefault(id,key+"@")
+            else:
+                fout.write(key+"\t1\t0\t"+vv[0]+"\n")
+        else:
+            fout.write(key+"\t"+str(len(vv))+"\t0\t"+mm[key]+"\n")
+    for key in mmk:
+        vv = mmk[key][0:-2].split("@")
+        fout1.write(key+"\t"+str(len(vv))+"\t"+mmk[key]+"\n")
+        
+
+def re_com_snp(file_in,file_in1,file_out):
+    fout = open(file_out,'w')
+    mm = {}
+    mm1 = {}
+    for line in open(file_in):
+        vec = line.strip().split("\t")
+        site = vec[0]
+        mm.setdefault(site,"")
+        mm1.setdefault(site+"_a","")
+        mm1.setdefault(site+"_b","")
+    print(len(mm))
+    print(len(mm1))
+    
+    for line in open(file_in1):
+        mmk = {}
+        vec = line.strip().split("\t")
+        vec1 = vec[2][0:-1].split("@")
+        i_leng = 0
+        i_str = ""
+        for ii in range(0,len(vec1)):
+            vec_temp = vec1[ii].split("#")
+            id_temp = vec_temp[0]
+            snp_temp = vec_temp[1]
+            if(mm.has_key(id_temp)):
+                i_leng += 1
+                i_str += vec1[ii]+"@"
+                if(mmk.has_key(snp_temp)):
+                    mmk[snp_temp] += 1
+                else:
+                    mmk.setdefault(snp_temp,1)
+        vec2 = vec[4][0:-1].split("@")
+        k_leng = 0
+        k_str = ""
+        for ii in range(0,len(vec2)):
+           id_temp = vec2[ii]
+           if(mm1.has_key(id_temp)): 
+                k_leng += 1
+                k_str += vec2[ii]+"@"
+        st_snp = ""
+        i_snp = 0
+        for key in mmk:
+            st_snp += key+"@"+str(mmk[key])+"\t"
+        fout.write(vec[0]+"\t"+str(i_leng)+"\t"+i_str+"\t"+str(k_leng)+"\t"+k_str+"\t"+str(len(mmk))+"\t"+st_snp+"\n")
+        
+            
 if __name__ == '__main__':
     #print("Lachesis_group18__9_contigs__length_31774926:23659499_a"[0:-2])
     #snp_outside('E://super_down//tt','E://super_down//tt.he','E://super_down//tt.err','E://super_down//kk.err')
@@ -2278,6 +2371,6 @@ if __name__ == '__main__':
    
     type_2_kf('/Users/yangcheng/Documents/supper_down/ki','/Users/yangcheng/Documents/supper_down/ki.1')
     '''
-    is_only_bb('/Users/yangcheng/Documents/supper_down/temp.mess','/Users/yangcheng/Documents/supper_down/temp.1')
-    
+    #is_only_bb('/Users/yangcheng/Documents/supper_down/temp.mess','/Users/yangcheng/Documents/supper_down/temp.1')
+    re_com_snp('/Users/yangcheng/Documents/supper_down/p1','/Users/yangcheng/Documents/supper_down/k2','/Users/yangcheng/Documents/supper_down/k3')
     
